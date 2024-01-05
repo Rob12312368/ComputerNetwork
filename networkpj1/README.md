@@ -1,11 +1,11 @@
 # Project I
-Description
+## Description  
 For this programming assignment you will write two pieces of code: the "sender" and the "requester". The sender will chunk a requested file and send each file chunk via UDP packets to the requester. The requester will receive these packets, subsequently write it to a file and print receipt information. The file transfer is distributed meaning that the requester may need to connect to different senders to get parts of the file and then assemble these parts to get the whole file. The code must be written in Python3 and must be able to run on the CSL Linux machines. Your code should be able to run both on a single host and on several different hosts.
 
 Details and Requirements
 The packets which will be sent are to be of the form:
 
-pj1_640-1.png
+![image](https://github.com/Rob12312368/ComputerNetwork/assets/56261402/d9693d1e-79db-4e89-ae7e-2ac729b62d81)
 
 Packet type
 
