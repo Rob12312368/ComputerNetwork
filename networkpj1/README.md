@@ -58,12 +58,14 @@ Each sender will have a copy of the file parts that it is responsible for in the
 - rate is the number of packets to be sent per second,  
 - seq_no is the initial sequence of the packet exchange,  
 - length is the length of the payload (in bytes) in the packets.  
+
 Additional notes for the parameters:  
 
 - sender and requester port should be in this range: 2049 < port < 65536
 - for implementing the rate parameter the sending interval should be evenly distributed, i.e. when the rate is 10 packets per second the sender has to send one packet at about every 100 milliseconds. It should not send them all in a short time and wait for the remaining time in the second.
 - The sender will always send ‘D’ (Data) packets with the same payload length, except for perhaps the last packet of the transfer. If the sender is responsible for 101 bytes of a file and has a length parameter set to 100, the second packet’s payload should just contain the last byte of the file.
 - The sender will send an END packet after sending all its data packets.
+
 The sender must print the following information for each packet sent to the requester, with each packet's information in a separate line.  
 
 - The time that the packet was sent with millisecond granularity,
@@ -71,24 +73,26 @@ The sender must print the following information for each packet sent to the requ
 - The sequence number, and
 - The first 4 bytes of the payload
 ## Requester  
-The requester is invoked in the following way.
+The requester is invoked in the following way.  
 
- python3 requester.py -p <port> -o <file option>
+`python3 requester.py -p <port> -o <file option>`  
 
-port is the port on which the requester waits for packets,
-file option is the name of the file that is being requested.
-The requester must print the following information for each packet that it receives, with each packet's information in a separate line:
+- port is the port on which the requester waits for packets,  
+- file option is the name of the file that is being requested.
 
-The time at which the packet was received in millisecond granularity,
-Sender's IP address (in decimal-dot notation) and sender’s port number,
-The packet sequence number,
-The payload's length (in bytes), and
-the first 4 bytes of the payload.
-After the END packet is received, it should print the following summary information about the test separately for "each" sender:
+The requester must print the following information for each packet that it receives, with each packet's information in a separate line:  
 
-Sender's IP address (in decimal-dot notation) and sender’s port number,
-Total data packets received,
-Total data bytes received (which should add up to the file part size),
-Average packets/second, and
-Duration of the test. This duration should start with the first data packet received from that sender and end with the END packet from it.
-The requester also should write the chunks that it receives to a file with the same file name as it requested. This new file will be compared with the actual file that was sent out.
+- The time at which the packet was received in millisecond granularity,
+- Sender's IP address (in decimal-dot notation) and sender’s port number,
+- The packet sequence number,
+- The payload's length (in bytes), and
+- the first 4 bytes of the payload.
+
+After the END packet is received, it should print the following summary information about the test separately for "each" sender:  
+
+- Sender's IP address (in decimal-dot notation) and sender’s port number,
+- Total data packets received,
+- Total data bytes received (which should add up to the file part size),
+- Average packets/second, and
+- Duration of the test. This duration should start with the first data packet received from that sender and end with the END packet from it.
+- The requester also should write the chunks that it receives to a file with the same file name as it requested. This new file will be compared with the actual file that was sent out.
