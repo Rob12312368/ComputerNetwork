@@ -94,5 +94,5 @@ After the END packet is received, it should print the following summary informat
 - Total data packets received,
 - Total data bytes received (which should add up to the file part size),
 - Average packets/second, and
-- Duration of the test. This duration should start with the first data packet received from that sender and end with the END packet from it.
-- The requester also should write the chunks that it receives to a file with the same file name as it requested. This new file will be compared with the actual file that was sent out.
+- Duration of the test. This duration should start with the first data packet received from that sender and end with the END packet from it.  
+The requester also should write the chunks that it receives to a file with the same file name as it requested. This new file will be compared with the actual file that was sent out.
