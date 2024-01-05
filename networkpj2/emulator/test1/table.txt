@@ -1,0 +1,4 @@
+tsaoching 6000 tsaoching 4000 tsaoching 3000 0 0
+tsaoching 6000 tsaoching 5000 tsaoching 5000 0 0
+tsaoching 3000 tsaoching 4000 tsaoching 4000 0 0
+tsaoching 3000 tsaoching 5000 tsaoching 6000 0 0
