@@ -1,37 +1,37 @@
 # Computer Network Project II - Network Emulator and Reliable Transfer
 
-1. Overview
+# 1. Overview
 In this project you will implement a network emulator and add reliable transfer to your distributed file transfer in the previous assignment. As with the first programming assignment, you can work in teams and write your code in Python. Please read on carefully.
 
-1.1. Network Emulator
-For this programming assignment you will create a network emulator, which delivers packets between sender(s) and requester(s) you created for the first programming assignment. Your senders and requesters will have additional requirements to support the network emulator.
+## 1.1. Network Emulator
+For this programming assignment you will create a network emulator, which delivers packets between sender(s) and requester(s) you created for the first programming assignment. Your senders and requesters will have additional requirements to support the network emulator.  
 
-The network emulator will receive a packet, decide where it is to be forwarded, and, based on the packet priority level, queue it for sending. Upon sending, you will delay the packet to simulate link bandwidth, and randomly drop packets to simulate a lossy link.
+The network emulator will receive a packet, decide where it is to be forwarded, and, based on the packet priority level, queue it for sending. Upon sending, you will delay the packet to simulate link bandwidth, and randomly drop packets to simulate a lossy link.  
 
 We also ask you to implement packet priority queues, a common feature of many packet queueing algorithms. There will be three packet priority levels, and there will be a separate sending queue for each priority level. Each queue will have a fixed size. If the outbound queue for a particular priority level is full, the packet will be dropped. Higher priority packets are always forwarded before lower priority packets.
 
-1.2. Reliable Transfer
-To achieve the reliable transfer, the requester will advertise a window size (see the requester specification of this write up for more info) to the sender with the request packet. The sender will send a full "window" of packets and wait for ACKs of each packet before sending more packets. After a certain timeout, the sender will retransmit the packets that it has not received an ack for.
+## 1.2. Reliable Transfer
+To achieve the reliable transfer, the requester will advertise a window size (see the requester specification of this write up for more info) to the sender with the request packet. The sender will send a full "window" of packets and wait for ACKs of each packet before sending more packets. After a certain timeout, the sender will retransmit the packets that it has not received an ack for.  
 
-2. Details + Requirements
-2.1. Forwarding Encapsulation / Packet structure
-In order to implement priority levels and forwarding, you will encapsulate the packet type from the first programming assignment inside a new packet.
+# 2. Details + Requirements
+## 2.1. Forwarding Encapsulation / Packet structure
+In order to implement priority levels and forwarding, you will encapsulate the packet type from the first programming assignment inside a new packet.  
 
- LAB2_PACKET.png
+![image](https://github.com/Rob12312368/ComputerNetwork/assets/56261402/111bbc45-7cb4-400f-8c92-86844212900a)
 
- 
 
-Essentially, you are adding an 8-bit priority, a 32-bit source IP address, a 16-bit source port, a 32-bit destination IP address, a 16-bit destination port and a 32-bit length to the front of the packet layout from “programming assignment #1”. Compare this with how UDP datagrams are encapsulated inside IP datagrams (which are then encapsulated in a layer 2 protocol, such as Ethernet). The length field of the outer packet is set to the total size of the inner packet, i.e. inner packet header size + inner packet payload size.
+Essentially, you are adding an 8-bit priority, a 32-bit source IP address, a 16-bit source port, a 32-bit destination IP address, a 16-bit destination port and a 32-bit length to the front of the packet layout from “programming assignment #1”. Compare this with how UDP datagrams are encapsulated inside IP datagrams (which are then encapsulated in a layer 2 protocol, such as Ethernet). The length field of the outer packet is set to the total size of the inner packet, i.e. inner packet header size + inner packet payload size.  
 
-Note that:
+Note that:  
 
-Valid values for priority levels are:
-0x01 - highest priority
-0x02 - medium priority
-0x03 - lowest priority
-For the ack packet, the packet type will be A (capital a) and the sequence field will contain the sequence number of the packet that is being acknowledged.
-All the packets sent by the requester should have priority 1.
-The priority of the END packet is the same as the other packets in the flow.
+- Valid values for priority levels are:  
+1. 0x01 - highest priority
+2. 0x02 - medium priority
+3. 0x03 - lowest priority
+
+- For the ack packet, the packet type will be A (capital a) and the sequence field will contain the sequence number of the packet that is being acknowledged.
+- All the packets sent by the requester should have priority 1.
+- The priority of the END packet is the same as the other packets in the flow.
 2.2. Logical Functions of Emulator
 The logical functions of the emulator consist of routing, queueing, sending, and logging. Each sub-function is detailed below.
 
