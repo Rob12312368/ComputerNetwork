@@ -35,13 +35,13 @@ Note that:
 2.2. Logical Functions of Emulator
 The logical functions of the emulator consist of routing, queueing, sending, and logging. Each sub-function is detailed below.
 
-Static forwarding table:
+### Static forwarding table:
 
-The logical functions depend on the static forwarding table provided to the emulators through a file. The file contain lines in the format below, with space as delimiter between the various fields:
+The logical functions depend on the static forwarding table provided to the emulators through a file. The file contain lines in the format below, with space as delimiter between the various fields:  
 
-<emulator> <destination> <nexthop> <delay> <loss probability>
+<emulator> <destination> <nexthop> <delay> <loss probability>  
 
-emulator: a "<Host name> <Port>" pair that identifies the emulator for which the current entry is associated with. Multiple emulators may be specified in a single table, and so they must filter only the lines that apply to them,
+_emulator_: a "<Host name> <Port>" pair that identifies the emulator for which the current entry is associated with. Multiple emulators may be specified in a single table, and so they must filter only the lines that apply to them,
 destination: a "<Host name> <Port>" pair that identifies the final destination of the packet,
 next hop: a "<Host name> <Port>" pair that identifies the next entity to forward the packet to. It can be an emulator, sender or requester.
 delay: in milliseconds, and identifies how long the emulator will delay before sending a packet to the corresponding destination.
