@@ -73,25 +73,25 @@ The interval of transmission (ie. how frequently updates are sent) is up to you 
    4. A time to live (TTL) for this packet. 
 3. In this lab, you can assume that your helloMessage and LinkStateMessage will not be lost.
 4. The packet format of these messages is up to you. Also, you can decide the initial TTL and sequence number of LinkStateMessage by yourselves.
-   - Your emulator can follow the steps below in an infinite loop and no threading is required for this assignment. You can also design your own link-state protocol based on the textbook.
-   1. Receive packet from network in a non-blocking way. This means that you should not wait/get blocked in the recvfrom function until you get a packet. Check if you have received a packet; If not jump to 3,
+- Your emulator can follow the steps below in an infinite loop and no threading is required for this assignment. You can also design your own link-state protocol based on the textbook.
+  1. Receive packet from network in a non-blocking way. This means that you should not wait/get blocked in the recvfrom function until you get a packet. Check if you have received a packet; If not jump to 3,
 
-   2. Once you receive a packet, decide the type of the packet. 
+  2. Once you receive a packet, decide the type of the packet. 
 
-      - If it is a helloMessage, your code should
-        - Update the latest timestamp for receiving the helloMessage from the specific neighbor.
-        - Check the route topology stored in this emulator. If the sender of helloMessage is from a previously unavailable node, change the route topology and forwarding table stored in this emulator. Then generate and send a new LinkStateMessage to its neighbors.
-      - If it is a LinkSateMessage, your code should 
-        - Check the largest sequence number of the sender node to determine whether it is an old message. If it’s an old message, ignore it. 
-        - If the topology changes, update the route topology and forwarding table stored in this emulator if needed.
-        - Call forwardpacket function to make a process of flooding the LinkStateMessage to its own neighbors.
+     - If it is a helloMessage, your code should
+       - Update the latest timestamp for receiving the helloMessage from the specific neighbor.
+       - Check the route topology stored in this emulator. If the sender of helloMessage is from a previously unavailable node, change the route topology and forwarding table stored in this emulator. Then generate and send a new LinkStateMessage to its neighbors.
+     - If it is a LinkSateMessage, your code should 
+       - Check the largest sequence number of the sender node to determine whether it is an old message. If it’s an old message, ignore it. 
+       - If the topology changes, update the route topology and forwarding table stored in this emulator if needed.
+       - Call forwardpacket function to make a process of flooding the LinkStateMessage to its own neighbors.
      - If it is a DataPacket / EndPacket / RequestPacket in Lab 2, forward it to the nexthop. You don't need to do queueing, delaying and dropping.
      - If it is a routetrace packet (described below), refer to the routetrace application part for correct implementation.
-   3. Send helloMessage to all neighbors if a defined interval has passed since last time sending the helloMessage.
+  3. Send helloMessage to all neighbors if a defined interval has passed since last time sending the helloMessage.
 
-   4. Check each neighbor, if helloMessage hasn’t received in time (comparing to the latest timestamp of the received HelloMessage from that neighbor), remove the neighbor from route topology, call the buildForwardTable to rebuild the forward table, and update the send new LinkStateMessage to its neighbors.
+  4. Check each neighbor, if helloMessage hasn’t received in time (comparing to the latest timestamp of the received HelloMessage from that neighbor), remove the neighbor from route topology, call the buildForwardTable to rebuild the forward table, and update the send new LinkStateMessage to its neighbors.
 
-   5. Send the newest LinkStateMessage to all neighbors if the defined intervals have passed.
+  5. Send the newest LinkStateMessage to all neighbors if the defined intervals have passed.
 
 forwardpacket
 forwardpacket will determine whether to forward a packet and where to forward a packet received by an emulator in the network. Your emulator should be able to handle both packets regarding the LinkStateMessage, and packets that are forwarded to it from the routetrace application (described below). For LinkStateMessage, you need to forward the LinkStateMessage to all its neighbors except where it comes from. However, when TTL (time to live) decreases to 0, you don’t need to forward this packet anymore.
