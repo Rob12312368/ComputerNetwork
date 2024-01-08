@@ -93,106 +93,109 @@ The interval of transmission (ie. how frequently updates are sent) is up to you 
 
   5. Send the newest LinkStateMessage to all neighbors if the defined intervals have passed.
 
-forwardpacket
-forwardpacket will determine whether to forward a packet and where to forward a packet received by an emulator in the network. Your emulator should be able to handle both packets regarding the LinkStateMessage, and packets that are forwarded to it from the routetrace application (described below). For LinkStateMessage, you need to forward the LinkStateMessage to all its neighbors except where it comes from. However, when TTL (time to live) decreases to 0, you don’t need to forward this packet anymore.
+## forwardpacket
+**forwardpacket** will determine whether to forward a packet and where to forward a packet received by an emulator in the network. Your emulator should be able to handle both packets regarding the LinkStateMessage, and packets that are forwarded to it from the routetrace application (described below). For LinkStateMessage, you need to forward the LinkStateMessage to all its neighbors except where it comes from. However, when TTL (time to live) decreases to 0, you don’t need to forward this packet anymore.  
 
-buildForwardTable
-buildForwardTable will use the forward search algorithm (see page 256-258 in the textbook) to compute a forwarding table based on the topology it collected from LinkStateMessage. The forwarding table contains entries in the form of (Destination, Nexthop). Anytime an emulator node detects a change of its topology, it should call the buildForwardTable function to update its forwarding table.
+## buildForwardTable
+**buildForwardTable** will use the forward search algorithm (see page 256-258 in the textbook) to compute a forwarding table based on the topology it collected from LinkStateMessage. The forwarding table contains entries in the form of (Destination, Nexthop). Anytime an emulator node detects a change of its topology, it should call the buildForwardTable function to update its forwarding table.
 
-Emulator
-The emulator will be invoked as follows:
+## Emulator
+The emulator will be invoked as follows:  
 
- python3 emulator.py -p <port> -f <filename>
+`python3 emulator.py -p <port> -f <filename>`
 
-port: the port that the emulator listens on for incoming packets.
-filename: the name of the topology file described above.
+- port: the port that the emulator listens on for incoming packets.
+- filename: the name of the topology file described above.
 Note that for each emulator, you are required to print the topology and forwarding table each time it’s changed. See the example section for more details. You might want to print some other debugging information from the emulator so that if your program is not behaving as expected at the demo time we can analyze what your program does and does not do correctly. 
 
-routetrace Details
-routetrace is an application similar to the standard traceroute tool which will trace the hops along a shortest path between the source and destination emulators. routetrace will send packets to the source emulator with successively larger time-to-live values until the destination node is reached and will produce an output showing the shortest path to the destination. You will use this application to verify that your implementation of link-state protocol has the correct shortest paths between the nodes.
+---
 
-This application will generate an output that traces the shortest path between the source and destination node in the network that is given to it by the command line parameters below. An instance of routetrace will be invoked as follows:
+## routetrace Details
+routetrace is an application similar to the standard traceroute tool which will trace the hops along a shortest path between the source and destination emulators. routetrace will send packets to the source emulator with successively larger time-to-live values until the destination node is reached and will produce an output showing the shortest path to the destination. You will use this application to verify that your implementation of link-state protocol has the correct shortest paths between the nodes.  
 
-python3 trace.py -a <routetrace port> -b < source hostname> -c <source port> -d <destination hostname> -e <destination port> -f <debug option>
+This application will generate an output that traces the shortest path between the source and destination node in the network that is given to it by the command line parameters below. An instance of routetrace will be invoked as follows:  
 
-routetrace port: the port that the routetrace listens on for incoming packets.
-source hostname, source port, destination hostname, destination port: routetrace will output the shortest path between the <source hostname, source port> to <destination hostname, destination port> .
-Debug option: When the debug option is 1, the application will print out the following information about the packets that it sends and receives: TTL of the packet and the src. and dst. IP and port numbers. It will not do so when this option is 0.
-Same as before, the specific packet format of these messages is up to you.This is the suggested fields of the routetrace packet for the routetrace application. 
+`python3 trace.py -a <routetrace port> -b < source hostname> -c <source port> -d <destination hostname> -e <destination port> -f <debug option>`
 
-Time to Live
-Source IP, source port
-Destination IP, destination port
-More concretely here is what the routetrace application does:
+- **routetrace port**: the port that the routetrace listens on for incoming packets.
+- **source hostname, source port, destination hostname, destination port**: routetrace will output the shortest path between the <source hostname, source port> to <destination hostname, destination port> .
+- **Debug option**: When the debug option is 1, the application will print out the following information about the packets that it sends and receives: TTL of the packet and the src. and dst. IP and port numbers. It will not do so when this option is 0.  
+Same as before, the specific packet format of these messages is up to you.This is the suggested fields of the routetrace packet for the routetrace application.  
 
-It gets the (IP, port) of the source node and destination node from the command line.
-It sets the TTL of the packet to 0: TTL=0
-Send a routetrace packet to the source node with packet fields:
-Time to Live: TTL, 
-Source IP, source port: routetrace IP, routetrace Port     (from command line)
-Destination IP, destination port: Destination IP, Destination Port (from command line)
-Wait for a response.
-Once it gets a response, print out the responders IP and port (that it gets from the response packet).
-If the source IP and port fields of the routetrace packet that it received equals the destination IP and port from the command line then TERMINATES.
-Otherwise, TTL = TTL + 1, goto 3.
-Here is what your emulator should do once it receives a routetrace packet:
+- Time to Live
+- Source IP, source port
+- Destination IP, destination port
+More concretely here is what the routetrace application does:  
 
-If TTL is 0, create a new routetrace packet. Put its own IP and Port to the source IP and port fields of the routetraceReply packet. Other fields of the packet should be identical to the packet it received. Send that back to the routetrace application (using the source IP and port fields of the routetrace packet that it received).
-If TTL is not 0, decrement the TTL field in the packet. Search in its route table and send the altered packet to the next hop on the shortest path to the destination.
-Example
-The Ctrl+ C command on the terminal will be used to temporarily disable an emulator in the topology. The idea is that the topology must be reconfigurable on the fly. When an emulator is disabled, it will cease forwarding packets and cease sending its routing messages to its neighbors. When the emulator is started again, it will begin participating in routing and forwarding again and the shortest path routes will get updated.
+1. It gets the (IP, port) of the source node and destination node from the command line.
+2. It sets the TTL of the packet to 0: TTL=0
+3. Send a routetrace packet to the source node with packet fields:
+   1. Time to Live: TTL, 
+   2. Source IP, source port: routetrace IP, routetrace Port     (from command line)
+   3. Destination IP, destination port: Destination IP, Destination Port (from command line)
+4. Wait for a response.
+5. Once it gets a response, print out the responders IP and port (that it gets from the response packet).
+6. If the source IP and port fields of the routetrace packet that it received equals the destination IP and port from the command line then TERMINATES.
+7. Otherwise, TTL = TTL + 1, goto 3.
+Here is what your emulator should do once it receives a routetrace packet:  
 
-Sample test case:
+- If TTL is 0, create a new routetrace packet. Put its own IP and Port to the source IP and port fields of the routetraceReply packet. Other fields of the packet should be identical to the packet it received. Send that back to the routetrace application (using the source IP and port fields of the routetrace packet that it received).
+- If TTL is not 0, decrement the TTL field in the packet. Search in its route table and send the altered packet to the next hop on the shortest path to the destination.
+---
+## Example
+The Ctrl+ C command on the terminal will be used to temporarily disable an emulator in the topology. The idea is that the topology must be reconfigurable on the fly. When an emulator is disabled, it will cease forwarding packets and cease sending its routing messages to its neighbors. When the emulator is started again, it will begin participating in routing and forwarding again and the shortest path routes will get updated.  
+
+Sample test case:  
 
 Firstly, we start 5 emulators using topology.txt. In topology.txtLinks to an external site., we define a network looks like:
 
-image.png
+![image](https://github.com/Rob12312368/ComputerNetwork/assets/56261402/36185152-f9a4-45bc-bba4-2fcf16c7ddfd)  
 
-We’ll give a sample output for the emulator with port 1 here. Other emulators have similar outputs. After the readtopology, it will print out the initial routing topology and forwarding table it gets from topology.txt:
+We’ll give a sample output for the emulator with port 1 here. Other emulators have similar outputs. After the readtopology, it will print out the initial routing topology and forwarding table it gets from topology.txt:  
 
-Topology: 
-
+Topology:  
+```
 1.0.0.0,1 2.0.0.0,2 3.0.0.0,3
 2.0.0.0,2 1.0.0.0,1 3.0.0.0,3 5.0.0.0,5
 3.0.0.0,3 1.0.0.0,1 2.0.0.0,2 4.0.0.0,4
 4.0.0.0,4 3.0.0.0,3 5.0.0.0,5
 5.0.0.0,5 2.0.0.0,2 4.0.0.0,4
-
-Forwarding table:
-
+```
+Forwarding table:  
+```
 2.0.0.0,2 2.0.0.0,2
 3.0.0.0,3 3.0.0.0,3
 4.0.0.0,4 3.0.0.0,3
 5.0.0.0,5 2.0.0.0,2
-
-Consider the above topology. If we run the routetrace application between nodes 1 and 4, here is the output that the routetrace application should get:
-
+```
+Consider the above topology. If we run the routetrace application between nodes 1 and 4, here is the output that the routetrace application should get:  
+```
 Hop#  IP Port
 1 1.0.0.0, 1
 2 3.0.0.0, 3
 3 4.0.0.0, 4
+```
+Now let's disable emulator 3 by using the command Ctrl + C. Your routes should reconfigure. Within at most 5 seconds, the emulator with port 1 will print out the new topology and forwarding table:  
 
-Now let's disable emulator 3 by using the command Ctrl + C. Your routes should reconfigure. Within at most 5 seconds, the emulator with port 1 will print out the new topology and forwarding table:
-
-Topology: 
-
+Topology:   
+```
 1.0.0.0,1 2.0.0.0,2
 2.0.0.0,2 1.0.0.0,1 5.0.0.0,5
 4.0.0.0,4 5.0.0.0,5
 5.0.0.0,5 2.0.0.0,2 4.0.0.0,4
-
-Forwarding table:
-
+```
+Forwarding table:  
+```
 2.0.0.0,2 2.0.0.0,2
 4.0.0.0,4 2.0.0.0,2
 5.0.0.0,5 2.0.0.0,2
-
-Once we run the routetrace application again after a few seconds, we should get:
-
+```
+Once we run the routetrace application again after a few seconds, we should get:  
+```
 Hop#   IP, Port
 1 1.0.0.0, 1
 2 2.0.0.0, 2
 3 5.0.0.0, 5
 4 4.0.0.0, 4
-
-Your program will be tested similarly with another topology at the demo time.
+```
+Your program will be tested similarly with another topology at the demo time.  
